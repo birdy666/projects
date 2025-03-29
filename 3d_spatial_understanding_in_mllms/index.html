@@ -117,7 +117,7 @@
           <!-- <h1 class="title is-1 publication-title">Uni-SLAM: Uncertainty-Aware Neural Implicit SLAM for Real-Time Dense Indoor Scene Reconstruction</h1> -->
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://birdy666.github.io/">Chun-Peng Chang</a>,
+              <a href="https://chunpeng-chang.github.io/">Chun-Peng Chang</a>,
             </span>
             <span class="author-block">
               <a href="https://www.dfki.de/en/web/about-us/employee/person/alpa02">Alain Pagani</a>,
@@ -251,10 +251,35 @@
         <h2 class="title is-3">Method</h2>
         <br>
         <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
-        <img src="./static/images/architecture.png" class="center" width="50%">
+        <img src="./static/images/architecture.png" class="center" width="100%">
         <div class="content has-text-justified">
           <p>
             Our training and evaluation pipeline consists of four key steps: visual input encoding, VLM token encoding, LLM generation, and evaluation. The input to the system includes a point cloud and a target ID, which typically comes from upstream tasks such as robot assistants or human-robot teaching interactions, could be a bounding box or just an ID number. In the visual input encoding step, we identify distractors based on the point cloud features of the target object and encode the relative spatial relationships between the target, distractors, and potential anchors. Various token encoding techniques are then applied. During evaluation, we assess the quality of the generated spatial instructions by measuring both sentence similarity and deeper understanding of 3D spatial comprehension.
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Insufficiency of Current Metrics on Evaluating 3D Understanding</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/metric_limitation.png" class="center" width="100%">
+        <div class="content has-text-justified">
+          <p>
+            Previous works evaluate their performance using metrics such as BLEU, ROUGE, METEOR, CIDEr, and SPICE. While these metrics have significantly contributed to progress in natural language processing—by focusing on surface-level text matching through n-gram overlap, semantic similarity, and lexical fidelity—they often fall short when applied to MLLMs that handle multimodal data and complex spatial reasoning.
+          </p>
+          <p>
+            The figure illustrates the limitations of conventional metrics. For instance, these metrics assign a high score to text <i>IV</i>, despite its reference to a hallucinated "blue table." Similarly, text <i>V</i> receives a high score even though its critical spatial descriptor "far" directly contradicts the "next" in the reference. Text <i>III</i>, although accurate, is ambiguous because it fails to resolve the presence of multiple nightstands next to a bed, making it ineffective for precise localization. On the other hand, texts <i>I</i> and <i>II</i>, which provide more contextually appropriate anchor references, receive lower scores—highlighting how these metrics overlook spatial accuracy.
+          </p>
+          <p>
+            Even advanced metrics like METEOR, CIDEr, and SPICE, which attempt to capture semantic meaning and sentence uniqueness, encounter similar shortcomings in the context of our task.
           </p>
         </div>
       </div>
