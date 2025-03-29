@@ -205,6 +205,7 @@
       <div class="column is-four-fifths">
         <hr>
         <h2 class="title is-3">Abstract</h2>
+        <img src="./static/images/architecture.jpg" class="center" width="50%">
         <div class="content has-text-justified">
           
           <p>
@@ -263,6 +264,54 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifth">
         <hr>
+        <h2 class="title is-3">Proposed Spatial Encoding Layer</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/spatialmap.png" class="center" width="100%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            Our novel spatial module captures relative spatial information from a single viewpoint by treating each object in the scene as
+a potential anchor. This approach generates unique spatial maps, each offering a different perspective of the scene. These maps are then
+undergo feature augmentation, where distances and angles are calculated, followed by normalization and scaling. Subsequently, a MLP
+layer is employed to transform these low-dimensional features into higher-dimensional ones for effective fusion with textual data.
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Proposed Spatial Encoding Layer</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/multi_anchor_agg.png" class="center" width="50%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            Our novel attention-based spatial feature aggregation.
+Each map designates a different object as the target, while treating
+all other objects as anchors. The importance of each anchor
+relative to the potential target object is represented in row i of the
+score matrix, indicating the relevance of each anchor in the context
+of the target.
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
         <h2 class="title is-3">Example</h2>
         <br>
         <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
@@ -294,7 +343,9 @@
         <div class="content has-text-justified">
           <br>  
           <p>
-            Our result compared with existing works.
+            Comparative analysis of the accuracy of our end-to-end solution against others on the Sr3D and Nr3D Challenges, highlighting
+MiKASA’s enhancements. Notably, in the view-dependent category, our solution demonstrates exceptional performance improvements,
+underscoring MiKASA’s superior accuracy and effectiveness over previous methods.
           </p>
         </div>
       </div>
