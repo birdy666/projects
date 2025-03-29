@@ -203,11 +203,10 @@
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
+        <img src="./static/images/teaser.png" class="center" width="60%">
         <hr>
         <h2 class="title is-3">Abstract</h2>
-        <img src="./static/images/teaser.png" class="center" width="50%">
         <div class="content has-text-justified">
-          
           <p>
             3D visual grounding involves matching natural language 
             descriptions with their corresponding objects in 3D spaces. 
@@ -247,11 +246,15 @@
         <div class="content has-text-justified">
           <br>  
           <p>
-            Architecture of our 3D Visual Grounding Model, which includes four main modules: 
-            a text encoder (Bert), a vision module with a scene-aware object encoder, a spatial
-            module that fuses spatial and textual data, and a multi-layered fusion module. The 
-            fusion module combines text, spatial, and object features, employing a dual-scoring 
-            system for enhanced object category identification and spatial-language assessment.
+            Architecture of our 3D Visual Grounding Model. The main contributions of our work can be summarized
+            as follows:
+            <br>
+            • We introduce a scene-aware object encoder that considers the contextual information and increases models ability to understand the object category.
+            <br>
+            • We present the multi-key-anchor technique, which enhances spatial understanding. This approach redefines coordinates relative to target objects and explicitly assesses the importance of nearby objects through textual context. It addresses the directional ambiguity often found in rotationally invariant models like PointNet++, by using spatial contexts to imply target object orientation.
+
+            <br>
+            • We develop a novel, end-to-end trainable and explainable architecture, that leverages late fusion to separately process distinct aspects of the data, thereby
           </p>
         </div>
       </div>
