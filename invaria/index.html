@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="keywords" content="3D Visual Grounding, Vision-Language Model">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MiKASA: Multi-Key-Anchor & Scene-Aware Transformer for 3D Visual Grounding</title>
+  <title>Invaria: Learning Scale and Density Invariance in Point Clouds via Next-Resolution Prediction</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -32,7 +32,6 @@
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="stylesheet" href="./static/css/invaria-viewer.css">
-  <link rel="icon" href="./static/images/icon.jpg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <!-- Loads <model-viewer> for modern browsers: -->
@@ -146,7 +145,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2603.09512"
+                <a href="https://arxiv.org/"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -190,6 +189,26 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <img src="./static/images/teaser.png" class="center" width="60%">
+        <hr>
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Modern image encoders achieve high generalization by decoupling semantic meaning from resolution, an ability yet to be fully realized in the 3D domain. We investigate the failure of 3D point cloud encoders to achieve similar generalization and find that existing models are highly sensitive to sampling resolution and scale changes, leading to significant performance degradation. This sensitivity is a major bottleneck for real-world deployment in robotics, as it suggests models overfit to specific quantization densities and object scales rather than learning invariant semantic features. To mitigate this dependency, we propose \textit{Invaria}, a point cloud encoder that achieves scale and density invariance through next-resolution prediction and receptive field calibration. While our objective is not the explicit generation of high-resolution point clouds, we find that this training objective encourages the model to learn robust, structural invariants. The resulting encoder achieves significant performance gains during resolution shifts while maintaining high efficiency through a compact model size and reduced token requirements. Specifically, on ScanNet, Invaria achieves a 56.0\% higher mIoU at 3$\times$ lower resolution and a 20\% improvement when the objects scale is reduced by a factor of 3. These gains are achieved with a 45\% smaller model size and an average reduction of 40\% in input tokens.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
   </div>
 </section>
 
