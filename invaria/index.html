@@ -31,6 +31,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/invaria-viewer.css">
   <link rel="icon" href="./static/images/icon.jpg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -50,6 +51,12 @@
   <script src="./static/js/index.js"></script>
   <script src="./static/js/mag.js"></script>
   <script src="./static/js/video_comparison.js"></script>
+
+  <!-- Three.js + viewer for point cloud comparison -->
+  <script src="./static/js/three.min.js"></script>
+  <script src="./static/js/PLYLoader.js"></script>
+  <script src="./static/js/OrbitControls.js"></script>
+  <script src="./static/js/invaria-scene-viewer.js"></script>
 
   <style>
     .grid-container {
@@ -186,6 +193,143 @@
   </div>
 </section>
 
+
+<section class="section">
+  <div class="inv-comparison-wrapper">
+    <h2 class="title is-3 has-text-centered">Interactive Comparison</h2>
+    <p class="has-text-centered" style="margin-bottom: 1.25rem;">
+      Pick a scene, then orbit any panel — all viewers stay in sync.
+      Each model cell is split: <b>default</b> resolution on the left,
+      <b>lower</b> resolution on the right.
+      For visualization, both predictions are projected back to the
+      original (full-density) point cloud, so the two halves share the
+      same geometry and only the per-point labels differ.
+    </p>
+
+    <div class="inv-scene-selector">
+      <div class="inv-scene-grid">
+        <button class="inv-scene-button active" data-scene="scene0064_00"
+                onclick="loadInvariaScene('scene0064_00')">
+          <img src="./static/images/scenes/scene0064_00.png" alt="Scene 1">
+          <span>Scene 1</span>
+        </button>
+        <button class="inv-scene-button" data-scene="scene0100_00"
+                onclick="loadInvariaScene('scene0100_00')">
+          <img src="./static/images/scenes/scene0100_00.png" alt="Scene 2">
+          <span>Scene 2</span>
+        </button>
+        <button class="inv-scene-button" data-scene="scene0222_00"
+                onclick="loadInvariaScene('scene0222_00')">
+          <img src="./static/images/scenes/scene0222_00.png" alt="Scene 3">
+          <span>Scene 3</span>
+        </button>
+        <button class="inv-scene-button" data-scene="scene0342_00"
+                onclick="loadInvariaScene('scene0342_00')">
+          <img src="./static/images/scenes/scene0342_00.png" alt="Scene 4">
+          <span>Scene 4</span>
+        </button>
+        <button class="inv-scene-button" data-scene="scene0423_00"
+                onclick="loadInvariaScene('scene0423_00')">
+          <img src="./static/images/scenes/scene0423_00.png" alt="Scene 5">
+          <span>Scene 5</span>
+        </button>
+        <button class="inv-scene-button" data-scene="scene0432_00"
+                onclick="loadInvariaScene('scene0432_00')">
+          <img src="./static/images/scenes/scene0432_00.png" alt="Scene 6">
+          <span>Scene 6</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="inv-canvas-grid">
+      <!-- Row 1: GT | Sp.Mink. | PTv3 -->
+      <div class="inv-cell">
+        <div class="inv-col-header">GT</div>
+        <div class="inv-canvas-wrapper">
+          <div id="inv-gt" class="inv-canvas"></div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Sp.Mink.</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-spunet" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">lower&nbsp;res</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">PTv3</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-ptv3" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">lower&nbsp;res</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Sonata | Utonia | Ours -->
+      <div class="inv-cell">
+        <div class="inv-col-header">Sonata</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-sonata" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">lower&nbsp;res</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Utonia</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-utonia" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">lower&nbsp;res</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Ours</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-ours" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">lower&nbsp;res</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inv-legend" class="inv-legend"></div>
+  </div>
+</section>
 
 
 </body>
