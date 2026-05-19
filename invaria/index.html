@@ -56,6 +56,7 @@
   <script src="./static/js/PLYLoader.js"></script>
   <script src="./static/js/OrbitControls.js"></script>
   <script src="./static/js/invaria-scene-viewer.js"></script>
+  <script src="./static/js/invaria-size-viewer.js"></script>
 
   <style>
     .grid-container {
@@ -225,7 +226,7 @@
 
 <section class="section">
   <div class="inv-comparison-wrapper">
-    <h2 class="title is-3 has-text-centered">Visualization</h2>
+    <h2 class="title is-3 has-text-centered">Visualization: Resolution Comparison</h2>
     <p class="has-text-centered" style="margin-bottom: 1.25rem;">
       Pick a scene, then orbit any panel — all viewers stay in sync.
       Each model cell is split: <b>default</b> resolution on the left,
@@ -357,6 +358,138 @@
     </div>
 
     <div id="inv-legend" class="inv-legend"></div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="inv-comparison-wrapper">
+    <h2 class="title is-3 has-text-centered">Visualization: Scale Comparison</h2>
+    <p class="has-text-centered" style="margin-bottom: 1.25rem;">
+      Pick an object, then orbit any panel — all viewers stay in sync.
+      Each model cell is split: <b>default</b> object scale on the left,
+      <b>3x smaller</b> object scale on the right. The right half is
+      rendered at 1/3 size around the same centroid, so you can see the
+      same prediction on the same object at two physical scales.
+    </p>
+
+    <div class="inv-scene-selector">
+      <div class="inv-scene-grid">
+        <button class="inv-scene-button active" data-object="scene0064_00_inst8"
+                onclick="loadInvariaObject('scene0064_00_inst8')">
+          <img src="./static/images/objects/scene0064_00_inst8.png" alt="Chair">
+          <span>Chair</span>
+        </button>
+        <button class="inv-scene-button" data-object="scene0423_00_inst3"
+                onclick="loadInvariaObject('scene0423_00_inst3')">
+          <img src="./static/images/objects/scene0423_00_inst3.png" alt="Chair 2">
+          <span>Chair 2</span>
+        </button>
+        <button class="inv-scene-button" data-object="scene0100_00_inst7"
+                onclick="loadInvariaObject('scene0100_00_inst7')">
+          <img src="./static/images/objects/scene0100_00_inst7.png" alt="Toilet">
+          <span>Toilet</span>
+        </button>
+        <button class="inv-scene-button" data-object="scene0222_00_inst14"
+                onclick="loadInvariaObject('scene0222_00_inst14')">
+          <img src="./static/images/objects/scene0222_00_inst14.png" alt="Desk">
+          <span>Desk</span>
+        </button>
+        <button class="inv-scene-button" data-object="scene0222_00_inst0"
+                onclick="loadInvariaObject('scene0222_00_inst0')">
+          <img src="./static/images/objects/scene0222_00_inst0.png" alt="Bed">
+          <span>Bed</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="inv-canvas-grid">
+      <!-- Row 1: GT | Sp.Mink. | PTv3 -->
+      <div class="inv-cell">
+        <div class="inv-col-header">GT</div>
+        <div class="inv-canvas-wrapper">
+          <div id="inv-size-gt" class="inv-canvas"></div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Sp.Mink.</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-size-mink" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">3x&nbsp;smaller</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">PTv3</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-size-ptv3" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">3x&nbsp;smaller</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Sonata | Utonia | Ours -->
+      <div class="inv-cell">
+        <div class="inv-col-header">Sonata</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-size-sonata" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">3x&nbsp;smaller</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Utonia</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-size-utonia" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">3x&nbsp;smaller</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-cell">
+        <div class="inv-col-header">Ours</div>
+        <div class="inv-canvas-wrapper inv-split-wrapper">
+          <div id="inv-size-ours" class="inv-canvas"></div>
+          <div class="inv-split-label inv-split-label-left">default</div>
+          <div class="inv-split-label inv-split-label-right">3x&nbsp;smaller</div>
+          <div class="inv-button-container">
+            <button class="inv-control-button sv-zoom-in-button">+</button>
+            <button class="inv-control-button sv-zoom-out-button">−</button>
+            <button class="inv-control-button sv-reset-button">⟳</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inv-size-legend" class="inv-legend"></div>
   </div>
 </section>
 

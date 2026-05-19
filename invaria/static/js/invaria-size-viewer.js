@@ -1,17 +1,16 @@
 (function () {
     const REMOTE_PLY_BASE =
-        "https://raw.githubusercontent.com/birdy666/assets/main/invaria/ply";
-    // When viewing locally (file:// or localhost) try ./static/ply first so you can
-    // test without pushing the assets repo. Symlink:
-    //   ln -s /Users/birdy/visualization/assets_out/invaria/ply invaria/static/ply
+        "https://raw.githubusercontent.com/birdy666/assets/main/invaria/ply_size";
+    // For local testing, symlink:
+    //   ln -s /Users/birdy/visualization/assets_out/invaria/ply_size invaria/static/ply_size
     const IS_LOCAL = location.hostname === "localhost" ||
                      location.hostname === "127.0.0.1" ||
                      location.protocol === "file:";
-    const PLY_BASE_URL = IS_LOCAL ? "./static/ply" : REMOTE_PLY_BASE;
+    const PLY_BASE_URL = IS_LOCAL ? "./static/ply_size" : REMOTE_PLY_BASE;
 
-    const MODELS = ["spunet", "ptv3", "sonata", "utonia", "ours"];
-    const RESOLUTIONS = ["2cm", "6cm"];          // 2cm = left half, 6cm = right half
-    const DEFAULT_SCENE = "scene0064_00";
+    const MODELS = ["mink", "ptv3", "sonata", "utonia", "ours"];
+    const RESOLUTIONS = ["regular", "smaller"];  // regular = left, smaller = right
+    const DEFAULT_OBJECT = "scene0064_00_inst8";
 
     const CLASS_NAMES = [
         "wall", "floor", "cabinet", "bed", "chair",
@@ -59,7 +58,7 @@
             this.manager = manager;
             this.config = {
                 camera: { fov: 45, near: 0.01, far: 2000 },
-                material: { size: 2.0 },
+                material: { size: 3.0 },   // single objects look better with slightly bigger points
                 bg: 0xffffff,
             };
         }
@@ -90,7 +89,7 @@
             container.appendChild(this.renderer.domElement);
 
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-            this.controls.minDistance = 0.1;
+            this.controls.minDistance = 0.05;
             this.controls.maxDistance = 200;
             this.controls.enableDamping = false;
             this.controls.addEventListener("change", () =>
@@ -123,7 +122,7 @@
         }
 
         resetView(dist) {
-            const d = dist || 5;
+            const d = dist || 2;
             this.camera.position.set(d * 0.6, -d * 0.8, d * 0.5);
             this.camera.up.set(0, 0, 1);
             this.controls.target.set(0, 0, 0);
@@ -132,7 +131,6 @@
         }
     }
 
-    // Single PLY (used for GT)
     class SingleViewer extends BaseViewer {
         constructor(containerId, plyPath, manager) {
             super(containerId, manager);
@@ -160,7 +158,7 @@
                 if (this.manager.isPrimary(this)) {
                     const size = new THREE.Vector3();
                     geo.boundingBox.getSize(size);
-                    this.manager.frameAll(size.length() * 0.9);
+                    this.manager.frameAll(size.length() * 1.2);
                 }
                 this.render();
             } catch (err) {
@@ -176,13 +174,11 @@
         }
     }
 
-    // Two PLYs in one canvas, split by a draggable vertical slider.
-    // Layer 0 = left (2cm); Layer 1 = right (6cm).
     class SplitViewer extends BaseViewer {
         constructor(containerId, plyA, plyB, manager) {
             super(containerId, manager);
-            this.plyA = plyA;          // left (2cm)
-            this.plyB = plyB;          // right (6cm)
+            this.plyA = plyA;          // left (regular)
+            this.plyB = plyB;          // right (smaller)
             this.pointsA = null;
             this.pointsB = null;
             this.initThree();
@@ -259,7 +255,7 @@
                 if (this.manager.isPrimary(this)) {
                     const size = new THREE.Vector3();
                     union.getSize(size);
-                    this.manager.frameAll(size.length() * 0.9);
+                    this.manager.frameAll(size.length() * 1.2);
                 }
                 this.render();
             } catch (err) {
@@ -303,7 +299,7 @@
         constructor() {
             this.viewers = [];
             this.syncing = false;
-            this.lastFrameDist = 5;
+            this.lastFrameDist = 2;
             this.splitRatio = 0.5;
         }
 
@@ -347,22 +343,26 @@
         }
     }
 
-    const plyUrl = (scene, name) => `${PLY_BASE_URL}/${scene}/${name}.ply`;
+    const plyUrl = (key, name) => `${PLY_BASE_URL}/${key}/${name}.ply`;
 
     let manager, gtViewer;
     const splitViewers = {};
 
     function initViewers() {
+        // Bail quietly if this section isn't on the page.
+        if (!document.getElementById("inv-size-gt")) return;
+
         manager = new ViewerManager();
 
-        gtViewer = new SingleViewer("inv-gt", plyUrl(DEFAULT_SCENE, "gt"), manager);
+        gtViewer = new SingleViewer("inv-size-gt",
+            plyUrl(DEFAULT_OBJECT, "gt"), manager);
         manager.addViewer(gtViewer);
 
         for (const model of MODELS) {
             const v = new SplitViewer(
-                `inv-${model}`,
-                plyUrl(DEFAULT_SCENE, `${model}_2cm`),
-                plyUrl(DEFAULT_SCENE, `${model}_6cm`),
+                `inv-size-${model}`,
+                plyUrl(DEFAULT_OBJECT, `${model}_regular`),
+                plyUrl(DEFAULT_OBJECT, `${model}_smaller`),
                 manager);
             splitViewers[model] = v;
             manager.addViewer(v);
@@ -387,7 +387,7 @@
     }
 
     function renderLegend() {
-        const el = document.getElementById("inv-legend");
+        const el = document.getElementById("inv-size-legend");
         if (!el) return;
         el.innerHTML = CLASS_NAMES.map((name, i) =>
             `<span class="inv-legend-item">
@@ -395,16 +395,16 @@
             </span>`).join("");
     }
 
-    window.loadInvariaScene = function (scene) {
+    window.loadInvariaObject = function (key) {
         if (!manager) return;
-        document.querySelectorAll("[data-scene]").forEach((b) =>
-            b.classList.toggle("active", b.dataset.scene === scene));
+        document.querySelectorAll("[data-object]").forEach((b) =>
+            b.classList.toggle("active", b.dataset.object === key));
 
-        gtViewer.setPath(plyUrl(scene, "gt"));
+        gtViewer.setPath(plyUrl(key, "gt"));
         for (const model of MODELS) {
             splitViewers[model].setPaths(
-                plyUrl(scene, `${model}_2cm`),
-                plyUrl(scene, `${model}_6cm`));
+                plyUrl(key, `${model}_regular`),
+                plyUrl(key, `${model}_smaller`));
         }
     };
 
