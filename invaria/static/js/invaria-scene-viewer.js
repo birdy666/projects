@@ -7,7 +7,8 @@
     const IS_LOCAL = location.hostname === "localhost" ||
                      location.hostname === "127.0.0.1" ||
                      location.protocol === "file:";
-    const PLY_BASE_URL = IS_LOCAL ? "./static/ply" : REMOTE_PLY_BASE;
+    const LOCAL_PLY_BASE = "./static/ply";
+    const PLY_BASE_URL = IS_LOCAL ? LOCAL_PLY_BASE : REMOTE_PLY_BASE;
 
     const MODELS = ["spunet", "ptv3", "sonata", "utonia", "ours"];
     const RESOLUTIONS = ["2cm", "6cm"];          // 2cm = left half, 6cm = right half
@@ -47,9 +48,18 @@
         });
     }
 
+    // Load a PLY. On local previews we try ./static first and, if it 404s (e.g.
+    // previewing from a remote machine without the symlink), fall back to the
+    // public assets repo so the page still works over a forwarded localhost port.
     function loadPLYGeometry(path) {
-        return new Promise((resolve, reject) => {
-            new THREE.PLYLoader().load(path, resolve, undefined, reject);
+        const load = (url) => new Promise((resolve, reject) => {
+            new THREE.PLYLoader().load(url, resolve, undefined, reject);
+        });
+        return load(path).catch((err) => {
+            if (path.startsWith(LOCAL_PLY_BASE)) {
+                return load(path.replace(LOCAL_PLY_BASE, REMOTE_PLY_BASE));
+            }
+            throw err;
         });
     }
 

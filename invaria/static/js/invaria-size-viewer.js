@@ -6,10 +6,11 @@
     const IS_LOCAL = location.hostname === "localhost" ||
                      location.hostname === "127.0.0.1" ||
                      location.protocol === "file:";
-    const PLY_BASE_URL = IS_LOCAL ? "./static/ply_size" : REMOTE_PLY_BASE;
+    const LOCAL_PLY_BASE = "./static/ply_size";
+    const PLY_BASE_URL = IS_LOCAL ? LOCAL_PLY_BASE : REMOTE_PLY_BASE;
 
     const MODELS = ["mink", "ptv3", "sonata", "utonia", "ours"];
-    const RESOLUTIONS = ["regular", "smaller"];  // regular = left, smaller = right
+    const SCALES = ["regular", "smaller"];  // regular = left (default), smaller = right (3x smaller)
     const DEFAULT_OBJECT = "scene0064_00_inst8";
 
     const CLASS_NAMES = [
@@ -46,10 +47,41 @@
         });
     }
 
+    // Load a PLY. On local previews we try ./static first and, if it 404s (e.g.
+    // previewing from a remote machine without the symlink), fall back to the
+    // public assets repo so the page still works over a forwarded localhost port.
     function loadPLYGeometry(path) {
-        return new Promise((resolve, reject) => {
-            new THREE.PLYLoader().load(path, resolve, undefined, reject);
+        const load = (url) => new Promise((resolve, reject) => {
+            new THREE.PLYLoader().load(url, resolve, undefined, reject);
         });
+        return load(path).catch((err) => {
+            if (path.startsWith(LOCAL_PLY_BASE)) {
+                return load(path.replace(LOCAL_PLY_BASE, REMOTE_PLY_BASE));
+            }
+            throw err;
+        });
+    }
+
+    const TARGET_SIZE = 1.0;   // every cloud is normalized to this max dimension
+
+    // Center a geometry at the origin (no rescaling). Returns its largest dimension
+    // so callers can derive a scale factor.
+    function centerGeometry(geo) {
+        geo.computeBoundingBox();
+        const center = new THREE.Vector3();
+        const size = new THREE.Vector3();
+        geo.boundingBox.getCenter(center);
+        geo.boundingBox.getSize(size);
+        geo.translate(-center.x, -center.y, -center.z);
+        return Math.max(size.x, size.y, size.z) || 1;
+    }
+
+    // Center a geometry and scale its largest dimension to TARGET_SIZE.
+    function normalizeGeometry(geo) {
+        const maxDim = centerGeometry(geo);
+        const s = TARGET_SIZE / maxDim;
+        geo.scale(s, s, s);
+        geo.computeBoundingBox();
     }
 
     class BaseViewer {
@@ -70,10 +102,14 @@
             return { w: Math.max(1, w), h: Math.max(1, h) };
         }
 
+        // Aspect of the area this viewer actually renders into. Overridden by
+        // SplitViewer, which renders two half-width viewports.
+        getAspect(w, h) { return w / h; }
+
         initThree() {
             const { w, h } = this.getCanvasDimensions();
             this.camera = new THREE.PerspectiveCamera(
-                this.config.camera.fov, w / h,
+                this.config.camera.fov, this.getAspect(w, h),
                 this.config.camera.near, this.config.camera.far);
             this.camera.position.set(3, -5, 3);
             this.camera.up.set(0, 0, 1);
@@ -115,7 +151,7 @@
 
         adjustCanvasSize() {
             const { w, h } = this.getCanvasDimensions();
-            this.camera.aspect = w / h;
+            this.camera.aspect = this.getAspect(w, h);
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(w, h);
             this.render();
@@ -143,10 +179,7 @@
         async loadPLY() {
             try {
                 const geo = await loadPLYGeometry(this.plyPath);
-                geo.computeBoundingBox();
-                const center = new THREE.Vector3();
-                geo.boundingBox.getCenter(center);
-                geo.translate(-center.x, -center.y, -center.z);
+                normalizeGeometry(geo);
 
                 if (this.points) {
                     this.scene.remove(this.points);
@@ -156,9 +189,7 @@
                 this.scene.add(this.points);
 
                 if (this.manager.isPrimary(this)) {
-                    const size = new THREE.Vector3();
-                    geo.boundingBox.getSize(size);
-                    this.manager.frameAll(size.length() * 1.2);
+                    this.manager.frameAll(TARGET_SIZE * 2.7);
                 }
                 this.render();
             } catch (err) {
@@ -177,55 +208,30 @@
     class SplitViewer extends BaseViewer {
         constructor(containerId, plyA, plyB, manager) {
             super(containerId, manager);
-            this.plyA = plyA;          // left (regular)
-            this.plyB = plyB;          // right (smaller)
+            this.plyA = plyA;          // left  (default scale)
+            this.plyB = plyB;          // right (3x smaller)
             this.pointsA = null;
             this.pointsB = null;
             this.initThree();
-            this.createSplitterUI();
+            this.createDivider();
             this.loadPair();
         }
 
-        createSplitterUI() {
+        // Each half is its own viewport, so use the half-width aspect to keep the
+        // two clouds undistorted.
+        getAspect(w, h) { return (w * 0.5) / h; }
+
+        // A static, non-interactive divider marking the fixed 50/50 boundary.
+        createDivider() {
             const wrapper = document.getElementById(this.containerId).parentNode;
-            const old = wrapper.querySelector(".sv-splitter");
+            const old = wrapper.querySelector(".sv-divider");
             if (old) old.remove();
 
-            const splitter = document.createElement("div");
-            splitter.className = "sv-splitter";
-            const handle = document.createElement("div");
-            handle.className = "sv-splitter-handle";
-            splitter.appendChild(handle);
-            wrapper.appendChild(splitter);
-            this.splitter = splitter;
+            const divider = document.createElement("div");
+            divider.className = "sv-divider";
+            wrapper.appendChild(divider);
+            this.divider = divider;
             this.wrapper = wrapper;
-            this.updateSplitterPosition();
-
-            splitter.addEventListener("pointerdown", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.dragging = true;
-                this.controls.enabled = false;
-                splitter.setPointerCapture?.(e.pointerId);
-            });
-            window.addEventListener("pointermove", (e) => {
-                if (!this.dragging) return;
-                const rect = wrapper.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const r = Math.min(0.95, Math.max(0.05, x / Math.max(1, rect.width)));
-                this.manager.setSplitRatio(r);
-            });
-            window.addEventListener("pointerup", (e) => {
-                if (!this.dragging) return;
-                this.dragging = false;
-                this.controls.enabled = true;
-                splitter.releasePointerCapture?.(e.pointerId);
-            });
-        }
-
-        updateSplitterPosition() {
-            if (!this.splitter) return;
-            this.splitter.style.left = `${this.manager.splitRatio * 100}%`;
         }
 
         async loadPair() {
@@ -234,13 +240,16 @@
                     loadPLYGeometry(this.plyA),
                     loadPLYGeometry(this.plyB),
                 ]);
+                // Center each cloud, then scale BOTH by the same factor (sized so the
+                // default object fills the panel). The 3x-smaller input therefore keeps
+                // its true ~1/3 proportion, so the scale change stays visible.
+                const maxDefault = centerGeometry(geoA);
+                centerGeometry(geoB);
+                const s = TARGET_SIZE / maxDefault;
+                geoA.scale(s, s, s);
+                geoB.scale(s, s, s);
                 geoA.computeBoundingBox();
                 geoB.computeBoundingBox();
-                const union = geoA.boundingBox.clone().union(geoB.boundingBox);
-                const center = new THREE.Vector3();
-                union.getCenter(center);
-                geoA.translate(-center.x, -center.y, -center.z);
-                geoB.translate(-center.x, -center.y, -center.z);
 
                 if (this.pointsA) { this.scene.remove(this.pointsA); this.pointsA.geometry.dispose(); }
                 if (this.pointsB) { this.scene.remove(this.pointsB); this.pointsB.geometry.dispose(); }
@@ -253,9 +262,7 @@
                 this.scene.add(this.pointsB);
 
                 if (this.manager.isPrimary(this)) {
-                    const size = new THREE.Vector3();
-                    union.getSize(size);
-                    this.manager.frameAll(size.length() * 1.2);
+                    this.manager.frameAll(TARGET_SIZE * 2.7);
                 }
                 this.render();
             } catch (err) {
@@ -268,24 +275,26 @@
             const size = this.renderer.getSize(new THREE.Vector2());
             const w = Math.max(1, Math.floor(size.x));
             const h = Math.max(1, Math.floor(size.y));
-            const splitX = Math.max(1, Math.min(w - 1,
-                Math.floor(w * this.manager.splitRatio)));
+            const splitX = Math.floor(w * 0.5);
 
             this.renderer.setScissorTest(false);
             this.renderer.clear(true, true, true);
-
             this.renderer.setScissorTest(true);
-            this.renderer.setViewport(0, 0, w, h);
 
+            // Left half: default scale (layer 0), framed in its own viewport.
             this.camera.layers.set(0);
+            this.renderer.setViewport(0, 0, splitX, h);
             this.renderer.setScissor(0, 0, splitX, h);
             this.renderer.render(this.scene, this.camera);
 
+            // Right half: 3x smaller (layer 1), framed in its own viewport.
             this.camera.layers.set(1);
+            this.renderer.setViewport(splitX, 0, w - splitX, h);
             this.renderer.setScissor(splitX, 0, w - splitX, h);
             this.renderer.render(this.scene, this.camera);
 
             this.renderer.setScissorTest(false);
+            this.renderer.setViewport(0, 0, w, h);
         }
 
         setPaths(plyA, plyB) {
@@ -300,7 +309,6 @@
             this.viewers = [];
             this.syncing = false;
             this.lastFrameDist = 2;
-            this.splitRatio = 0.5;
         }
 
         addViewer(v) { this.viewers.push(v); }
@@ -331,16 +339,6 @@
 
         adjustCanvasSizes() { this.viewers.forEach((v) => v.adjustCanvasSize()); }
         renderAll() { this.viewers.forEach((v) => v.render()); }
-
-        setSplitRatio(r) {
-            this.splitRatio = r;
-            this.viewers.forEach((v) => {
-                if (v instanceof SplitViewer) {
-                    v.updateSplitterPosition();
-                    v.render();
-                }
-            });
-        }
     }
 
     const plyUrl = (key, name) => `${PLY_BASE_URL}/${key}/${name}.ply`;
@@ -372,9 +370,6 @@
 
         window.addEventListener("resize", () => {
             manager.adjustCanvasSizes();
-            manager.viewers.forEach((v) => {
-                if (v instanceof SplitViewer) v.updateSplitterPosition();
-            });
             manager.renderAll();
         });
 
