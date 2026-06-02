@@ -174,7 +174,7 @@
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <img src="./static/images/header.png" class="center" width="60%">
+        <img src="./static/images/header.png" class="center" width="100%">
         <hr>
         <div class="content has-text-justified">
           <p>
@@ -211,7 +211,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifth">
         <hr>
-        <h2 class="title is-3">Method</h2>
+        <h2 class="title is-3">Evaluation</h2>
         <br>
         <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
         <img src="./static/images/evaluation.png" class="center" width="100%">
@@ -224,6 +224,57 @@
             <br> (3) Temporal Performance Decay, using metrics like Normalized Drop Ratio (NDR) to quantify reliability as the prediction horizon extends to 12 seconds
             <br> (4) LLM-as-Judge, utilizing GPT-4o to score the objective accuracy of spatial and semantic details ; 
             
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Inconsistency of VLM Response</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/inconsistency.png" class="center" width="100%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            we evaluate the performance of various VLMs on our proposed FutureVQA benchmark using 
+            the corresponding image for each question-answer pair as input—i.e., no future prediction 
+            is required. This setup serves both as a baseline for future scene reasoning and as a 
+            diagnostic to assess the consistency and reliability of VLM responses. Notably, we observe 
+            that all tested VLMs exhibit a significant drop in accuracy when the answer options are 
+            simply shuffled, despite the semantic content of the questions remaining unchanged. 
+            The most substantial decline occurs with CogVLM, which drops by 
+            23.8%, followed by LLaVA-NeXT 13B with a 23.1% decrease.
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Can VLMs "See" the Future?</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/future_pred.png" class="center" width="100%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            Accuracy (Acc) of models on our VQA benchmark at different future time frames. All 
+            accuracy values are evaluated across multiple trials to minimize the influence of 
+            random chance. The result suggest that models like GPT-4o, while showing strong ability 
+            in visual understdaning, fail to maintain consistent future scene reasoning across 
+            different time interval.
           </p>
         </div>
       </div>
