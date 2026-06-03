@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="keywords" content="3D Visual Grounding, Vision-Language Model">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MiKASA: Multi-Key-Anchor & Scene-Aware Transformer for 3D Visual Grounding</title>
+  <title>Probing the Reliability of Driving VLMs: From Inconsistent Responses to Grounded Temporal Reasoning</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -31,7 +31,6 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/icon.jpg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <!-- Loads <model-viewer> for modern browsers: -->
@@ -115,7 +114,6 @@
             <h2 class="title is-4"></h2>
           </div>
 
-          <!-- <h1 class="title is-1 publication-title">Uni-SLAM: Uncertainty-Aware Neural Implicit SLAM for Real-Time Dense Indoor Scene Reconstruction</h1> -->
           <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="https://chunpeng-chang.github.io/">Chun-Peng Chang</a>,
@@ -131,12 +129,20 @@
             </span>            
           </div>
 
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.tudelft.nl/">TU Delft</a>
+            </span> 
+            <span class="author-block">
+              <a href="https://www.dfki.de/en/web/research/research-departments/augmented-vision/">German Research Center for Artificial Intelligence(DFKI)</a>
+            </span>      
+          </div>
 
           <div class="column has-text-centered">
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2603.09512"
+                <a href="https://openaccess.thecvf.com/content/CVPR2026W/AUTOPILOT/papers/Chang_Probing_the_Reliability_of_Driving_VLMs_From_Inconsistent_Responses_to_CVPRW_2026_paper.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -144,42 +150,135 @@
                   <span>Paper</span>
                 </a>
               </span>
-              <!-- <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span> -->
-              <!-- Video Link. -->
-              <!-- <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span> -->
               <!-- Code Link. -->
-              <!-- <span class="link-block">
-                <a href="https://github.com/google/nerfies"
+              <span class="link-block">
+                <a href="https://huggingface.co/"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
-                  <span>Code</span>
+                  <span>Dataset (soon)</span>
                   </a>
-              </span> -->
-              
+              </span>
             </div>
-
           </div>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <img src="./static/images/header.png" class="center" width="100%">
+        <hr>
+        <div class="content has-text-justified">
+          <p>
+            A reliable driving assistant should provide consistent responses based on temporally 
+            grounded reasoning derived from observed information. In this work, we investigate 
+            whether Vision-Language Models (VLMs), when applied as driving assistants, can response 
+            consistantly and understand how present observations shape future outcomes, or whether 
+            their outputs merely reflect patterns memorized during training without temporally 
+            grounded reasoning. While recent efforts have integrated VLMs into autonomous driving, 
+            prior studies typically emphasize scene understanding and instruction generation, 
+            implicitly assuming that strong visual interpretation naturally enables consistant 
+            future reasoning and thus ensures reliable decision-making, a claim we critically examine.
+            We focus on two major challenges limiting VLM reliability in this setting: response 
+            inconsistency, where minor input perturbations yield different answers or, in some cases, 
+            responses degenerate toward near-random guessing, and limited temporal reasoning, 
+            in which models fail to reason and align sequential events from current observations, 
+            often resulting in incorrect or even contradictory responses. Moreover, we find that 
+            models with strong visual understanding do not necessarily perform best on tasks requiring 
+            temporal reasoning, indicating a tendency to over-rely on pretrained patterns rather 
+            than modeling temporal dynamics. To address these issues, we adopt existing evaluation 
+            methods and introduce FutureVQA, a human-annotated benchmark dataset specifically 
+            designed to assess future scene reasoning. In addition, we propose a simple yet effective 
+            self-supervised tuning approach with chain-of-thought reasoning that improves both 
+            consistency and temporal reasoning without requiring temporal labels.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Evaluation</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/evaluation.png" class="center" width="100%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            To evaluate model reliability, we introduce the FutureVQA benchmark, a human-annotated dataset of 2.7k question-answer pairs tailored to diverse driving scenes. Our evaluation framework focuses on grounding reasoning through five key metrics: 
+            <br> (1) Multi-trial Consistency, which measures the accuracy drop and flip rate when answer options are shuffled to filter out random guessing
+            <br> (2) Self-Aligned Comparison, assessing how closely a model's predicted future description matches a reference generated from the actual ground-truth frame
+            <br> (3) Temporal Performance Decay, using metrics like Normalized Drop Ratio (NDR) to quantify reliability as the prediction horizon extends to 12 seconds
+            <br> (4) LLM-as-Judge, utilizing GPT-4o to score the objective accuracy of spatial and semantic details ; 
+            
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Inconsistency of VLM Response</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/inconsistency.png" class="center" width="50%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            we evaluate the performance of various VLMs on our proposed FutureVQA benchmark using 
+            the corresponding image for each question-answer pair as input—i.e., no future prediction 
+            is required. This setup serves both as a baseline for future scene reasoning and as a 
+            diagnostic to assess the consistency and reliability of VLM responses. Notably, we observe 
+            that all tested VLMs exhibit a significant drop in accuracy when the answer options are 
+            simply shuffled, despite the semantic content of the questions remaining unchanged. 
+            The most substantial decline occurs with CogVLM, which drops by 
+            23.8%, followed by LLaVA-NeXT 13B with a 23.1% decrease.
+          </p>
+        </div>
+      </div>
+    <br>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-widescreen">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifth">
+        <hr>
+        <h2 class="title is-3">Can VLMs "See" the Future?</h2>
+        <br>
+        <!-- <embed src="./resources/pipeline.pdf" class="center" width="100%" height="800px"> -->
+        <img src="./static/images/future_pred.png" class="center" width="50%">
+        <div class="content has-text-justified">
+          <br>  
+          <p>
+            Accuracy (Acc) of models on our VQA benchmark at different future time frames. All 
+            accuracy values are evaluated across multiple trials to minimize the influence of 
+            random chance. The result suggest that models like GPT-4o, while showing strong ability 
+            in visual understdaning, fail to maintain consistent future scene reasoning across 
+            different time interval.
+          </p>
+        </div>
+      </div>
+    <br>
   </div>
 </section>
 
@@ -188,11 +287,13 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{chang2026probing,
+    <pre><code>@inproceedings{chang2026probing,
   title={Probing the Reliability of Driving VLMs: From Inconsistent Responses to Grounded Temporal Reasoning},
   author={Chang, Chun-Peng and Wang, Chen-Yu and Caesar, Holger and Pagani, Alain},
-  journal={arXiv preprint arXiv:2603.09512},
-  year={2026}}
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={644--654},
+  year={2026}
+}
     </code></pre>
   </div>
 </section>
@@ -204,25 +305,6 @@
     This work was partially funded by the EU project dAIEDGE (GA Nr 101120726).
   </div>
 </section>
-
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-            Our project page is built upon <a href="https://github.com/nerfies/nerfies.github.io">source code</a>.
-            We sincerely thank <a href="https://keunhong.com/">Keunhong Park</a> for developing and open-sourcing this template.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
 
 </body>
 </html>

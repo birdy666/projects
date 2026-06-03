@@ -372,10 +372,11 @@
       Scale Comparison</h2>
     <p class="has-text-centered" style="margin-bottom: 1.25rem;">
       Pick an object, then orbit any panel — all viewers stay in sync.
-      Each model cell is split: <b>default</b> object scale on the left,
-      <b>3x smaller</b> object scale on the right. The right half is
-      rendered at 1/3 size around the same centroid, so you can see the
-      same prediction on the same object at two physical scales.
+      Each model cell shows two side-by-side views of the same object:
+      the prediction at its <b>default</b> scale (left) and on the same object
+      shrunk <b>3x</b> before voxelization (right), drawn at its true relative
+      size. Compare how each model's labels hold up as the object — and the
+      points describing it — shrink.
     </p>
 
     <div class="inv-scene-selector">
