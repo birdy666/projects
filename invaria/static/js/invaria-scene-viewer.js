@@ -10,8 +10,12 @@
     const PLY_BASE_URL = IS_LOCAL ? "./static/ply" : REMOTE_PLY_BASE;
 
     const MODELS = ["spunet", "ptv3", "sonata", "utonia", "ours"];
-    const RESOLUTIONS = ["2cm", "6cm"];          // 2cm = left half, 6cm = right half
     const DEFAULT_SCENE = "scene0064_00";
+
+    // Left half: 2cm grid. Right half: 6cm grid (bumped point size so the
+    // sparser cloud stays visible).
+    const PLY_SUFFIX  = { left: "_2cm_raw", right: "_6cm_raw" };
+    const POINT_SIZE  = { left: 2.0,        right: 4.0        };
 
     const CLASS_NAMES = [
         "wall", "floor", "cabinet", "bed", "chair",
@@ -249,8 +253,8 @@
                 if (this.pointsA) { this.scene.remove(this.pointsA); this.pointsA.geometry.dispose(); }
                 if (this.pointsB) { this.scene.remove(this.pointsB); this.pointsB.geometry.dispose(); }
 
-                this.pointsA = new THREE.Points(geoA, makePointMaterial(this.config.material.size));
-                this.pointsB = new THREE.Points(geoB, makePointMaterial(this.config.material.size));
+                this.pointsA = new THREE.Points(geoA, makePointMaterial(POINT_SIZE.left));
+                this.pointsB = new THREE.Points(geoB, makePointMaterial(POINT_SIZE.right));
                 this.pointsA.layers.set(0);
                 this.pointsB.layers.set(1);
                 this.scene.add(this.pointsA);
@@ -348,6 +352,8 @@
     }
 
     const plyUrl = (scene, name) => `${PLY_BASE_URL}/${scene}/${name}.ply`;
+    const modelPlyUrl = (scene, model, side) =>
+        plyUrl(scene, `${model}${PLY_SUFFIX[side]}`);
 
     let manager, gtViewer;
     const splitViewers = {};
@@ -361,8 +367,8 @@
         for (const model of MODELS) {
             const v = new SplitViewer(
                 `inv-${model}`,
-                plyUrl(DEFAULT_SCENE, `${model}_2cm`),
-                plyUrl(DEFAULT_SCENE, `${model}_6cm`),
+                modelPlyUrl(DEFAULT_SCENE, model, "left"),
+                modelPlyUrl(DEFAULT_SCENE, model, "right"),
                 manager);
             splitViewers[model] = v;
             manager.addViewer(v);
@@ -403,8 +409,8 @@
         gtViewer.setPath(plyUrl(scene, "gt"));
         for (const model of MODELS) {
             splitViewers[model].setPaths(
-                plyUrl(scene, `${model}_2cm`),
-                plyUrl(scene, `${model}_6cm`));
+                modelPlyUrl(scene, model, "left"),
+                modelPlyUrl(scene, model, "right"));
         }
     };
 
