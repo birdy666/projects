@@ -82,7 +82,18 @@
       grid-column: 1 / 4;  
     }
     .item4 {
-      grid-column: 4 / 7;  
+      grid-column: 4 / 7;
+    }
+
+    .teaser-video {
+      margin-top: 1.5rem;
+    }
+    .teaser-video video {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
     }
   </style>
   
@@ -190,7 +201,15 @@
                   <span>Code</span>
                   </a>
               </span> -->
-              
+
+            </div>
+
+            <!-- Teaser video. -->
+            <div class="teaser-video">
+              <video autoplay muted loop playsinline preload="auto"
+                     poster="./static/images/teaser_poster.jpg">
+                <source src="./static/videos/teaser.mp4" type="video/mp4">
+              </video>
             </div>
 
           </div>
