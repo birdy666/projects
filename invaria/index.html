@@ -97,6 +97,23 @@
       background-clip: text;
       color: transparent;
     }
+    .publication-authors sup,
+    .publication-affiliations sup {
+      font-size: 0.65em;
+      margin-left: 1px;
+      color: #6b7280;
+    }
+    .publication-affiliations {
+      margin-top: 6px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1rem;
+      color: #4b5563;
+    }
+    .affiliation-block {
+      display: inline-block;
+      margin: 0 10px;
+    }
+
     .venue-badge {
       display: inline-block;
       margin: 14px 0 20px;
@@ -191,20 +208,24 @@
           <!-- <h1 class="title is-1 publication-title">Uni-SLAM: Uncertainty-Aware Neural Implicit SLAM for Real-Time Dense Indoor Scene Reconstruction</h1> -->
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://chunpeng-chang.github.io/">Chun-Peng Chang</a>,
+              <a href="https://chunpeng-chang.github.io/">Chun-Peng Chang</a><sup>1</sup>,
             </span>
             <span class="author-block">
-              <a href="https://shaoxiang777.github.io/">Shaoxiang Wang</a>,
+              <a href="https://shaoxiang777.github.io/">Shaoxiang Wang</a><sup>2</sup>,
             </span>
             <span class="author-block">
-              <a href="https://www.dfki.de/en/web/about-us/employee/person/alpa02">Alain Pagani</a>,
+              <a href="https://www.dfki.de/en/web/about-us/employee/person/alpa02">Alain Pagani</a><sup>2</sup>,
             </span>
             <span class="author-block">
-              <a href="https://www.tudelft.nl/en/staff/d.m.gavrila/">Dariu Gavrila</a>,
+              <a href="https://www.tudelft.nl/en/staff/d.m.gavrila/">Dariu Gavrila</a><sup>1</sup>,
             </span>
             <span class="author-block">
-              <a href="https://sites.google.com/it-caesar.de/homepage/">Holger Caesar</a>
+              <a href="https://sites.google.com/it-caesar.de/homepage/">Holger Caesar</a><sup>1</sup>
             </span>
+          </div>
+          <div class="publication-affiliations">
+            <span class="affiliation-block"><sup>1</sup>TU Delft, Cognitive Robotics</span>
+            <span class="affiliation-block"><sup>2</sup>German Research Center for Artificial Intelligence (DFKI), Augmented Vision</span>
           </div>
 
 
