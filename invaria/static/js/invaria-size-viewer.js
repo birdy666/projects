@@ -26,7 +26,7 @@
         "rgb(197,176,213)", "rgb(148,103,189)", "rgb(196,156,148)", "rgb(23,190,207)",
         "rgb(247,182,210)", "rgb(219,219,141)", "rgb(255,127,14)",  "rgb(158,218,229)",
         "rgb(44,160,44)",   "rgb(112,128,144)", "rgb(227,119,194)", "rgb(82,84,163)",
-        "rgb(0,0,0)",
+        "rgb(217,217,217)",
     ];
 
     function makePointMaterial(size) {
@@ -47,6 +47,22 @@
         });
     }
 
+    // The PLYs store "unlabeled" as black; draw it light grey instead
+    // (matches the teaser video and the legend).
+    const UNLABELED_GREY = 0.85;
+    function greyUnlabeled(geo) {
+        const attr = geo.getAttribute("color");
+        if (!attr) return geo;
+        const c = attr.array;
+        for (let k = 0; k < c.length; k += 3) {
+            if (c[k] === 0 && c[k + 1] === 0 && c[k + 2] === 0) {
+                c[k] = c[k + 1] = c[k + 2] = UNLABELED_GREY;
+            }
+        }
+        attr.needsUpdate = true;
+        return geo;
+    }
+
     // Load a PLY. On local previews we try ./static first and, if it 404s (e.g.
     // previewing from a remote machine without the symlink), fall back to the
     // public assets repo so the page still works over a forwarded localhost port.
@@ -59,7 +75,7 @@
                 return load(path.replace(LOCAL_PLY_BASE, REMOTE_PLY_BASE));
             }
             throw err;
-        });
+        }).then(greyUnlabeled);
     }
 
     const TARGET_SIZE = 1.0;   // every cloud is normalized to this max dimension
