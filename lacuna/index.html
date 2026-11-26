@@ -15,6 +15,69 @@
   <link rel="stylesheet" href="./static/css/index.css">
 
   <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+  <style>
+    .publication-title {
+      font-weight: 700;
+      color: #1f2329;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+    .publication-title .project-name {
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .publication-authors sup,
+    .publication-affiliations sup {
+      font-size: 0.65em;
+      margin-left: 1px;
+      color: #6b7280;
+    }
+    .publication-affiliations {
+      margin-top: 6px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1rem;
+      color: #4b5563;
+    }
+    .affiliation-block {
+      display: inline-block;
+      margin: 0 10px;
+    }
+
+    .bibtex-box {
+      position: relative;
+    }
+    .bibtex-box pre {
+      background: #f6f7f9;
+      border: 1px solid #e3e5e8;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #1f2329;
+      overflow-x: auto;
+    }
+    .bibtex-copy {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 12px;
+      border: 1px solid #d5d8dd;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #374151;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .bibtex-copy:hover {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+      color: #4338ca;
+    }
+  </style>
 </head>
 <body>
 
@@ -58,10 +121,10 @@
             </span>
           </div>
 
-          <div class="is-size-6 publication-authors">
-            <span class="author-block" style="margin: 0 0.6em;"><sup>1</sup>TU Delft, Cognitive Robotics</span>
-            <span class="author-block" style="margin: 0 0.6em;"><sup>2</sup>RPTU</span>
-            <span class="author-block" style="margin: 0 0.6em;"><sup>3</sup>DFKI, Augmented Vision</span>
+          <div class="publication-affiliations">
+            <span class="affiliation-block"><sup>1</sup>TU Delft, Cognitive Robotics</span>
+            <span class="affiliation-block"><sup>2</sup>RPTU</span>
+            <span class="affiliation-block"><sup>3</sup>DFKI, Augmented Vision</span>
           </div>
 
           <div class="column has-text-centered">
@@ -122,17 +185,48 @@
 
 
 <section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <!-- Add the arXiv number to the journal field once the paper is online. -->
-    <pre><code>@article{chang2026lacuna,
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Citation</h2>
+    <p class="has-text-centered" style="margin-bottom: 1rem;">
+      If you find our work useful, please consider citing:
+    </p>
+    <div class="bibtex-box">
+      <button class="bibtex-copy" type="button" onclick="copyBibtex(this)">Copy</button>
+      <!-- Add the arXiv number to the journal field once the paper is online. -->
+      <pre><code id="bibtex">@article{chang2026lacuna,
   title={What Remains and What Is Missing? Learning Point Cloud Semantic Representations for Partial Observations},
   author={Chang, Chun-Peng and Wang, Shaoxiang and Pagani, Alain and Gavrila, Dariu and Caesar, Holger},
   journal={arXiv preprint},
   year={2026}
 }</code></pre>
+    </div>
   </div>
 </section>
+
+<script>
+  function copyBibtex(btn) {
+    const text = document.getElementById("bibtex").textContent;
+    const done = () => {
+      btn.textContent = "Copied!";
+      setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+    };
+    // Older copy path, for insecure pages or when clipboard access is refused.
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      done();
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  }
+</script>
 
 
 </body>
